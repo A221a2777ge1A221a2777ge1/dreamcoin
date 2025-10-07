@@ -23,7 +23,8 @@ export type RewardTier = {
     | 'Kinshasa Diamond'
     | 'Addis Ababa Ally'
     | 'Gaborone Gem'
-    | 'Harare Hustler';
+    | 'Harare Hustler'
+    | 'Ouagadougou Oracle';
   trigger: string;
   reward: number;
   status: 'claimed' | 'unclaimed' | 'locked';

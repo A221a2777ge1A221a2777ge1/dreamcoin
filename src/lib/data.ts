@@ -127,4 +127,13 @@ export const userRewards: RewardTier[] = [
     status: 'locked',
     progress: 10,
   },
+  {
+    id: 'ouagadougou',
+    name: 'Ouagadougou Oracle',
+    tier: 'Ouagadougou Oracle',
+    trigger: 'Predict a token price correctly',
+    reward: 88,
+    status: 'locked',
+    progress: 0,
+  },
 ];

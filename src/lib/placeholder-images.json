@@ -47,6 +47,12 @@
       "description": "Harare Hustler Tier Image",
       "imageUrl": "https://picsum.photos/seed/harare/200/200",
       "imageHint": "harare zimbabwe"
+    },
+    {
+      "id": "ouagadougou-reward",
+      "description": "Ouagadougou Oracle Tier Image",
+      "imageUrl": "https://picsum.photos/seed/ouagadougou/200/200",
+      "imageHint": "burkina faso"
     }
   ]
 }

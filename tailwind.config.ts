@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'],
-        headline: ['Orbitron', 'sans-serif'],
+        body: ['Poppins', 'sans-serif'],
+        headline: ['Audiowide', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

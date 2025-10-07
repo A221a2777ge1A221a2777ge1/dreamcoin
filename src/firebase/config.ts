@@ -1,10 +1,9 @@
-// This file is intentionally left blank.
-// The Firebase config will be populated by the Firebase provisioning process.
+
 export const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "projectId.firebaseapp.com",
-  projectId: "projectId",
-  storageBucket: "projectId.appspot.com",
-  messagingSenderId: "senderId",
-  appId: "appId",
+  "projectId": "studio-4087474201-9833c",
+  "appId": "1:480210262299:web:d4a94f413d927d27cb9bbe",
+  "apiKey": "AIzaSyAJTCWb-AxiDoOeOUjfglXBgDgaIyzgnlE",
+  "authDomain": "studio-4087474201-9833c.firebaseapp.com",
+  "measurementId": "",
+  "messagingSenderId": "480210262299"
 };

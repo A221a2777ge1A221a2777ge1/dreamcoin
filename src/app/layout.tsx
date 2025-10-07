@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from '@/components/providers';
-import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { AuthLayout } from '@/components/layout/auth-layout';
 
-const APP_NAME = "Dreamtoke";
-const APP_DESCRIPTION = "Dreamtoke – Crypto Trading & Rewards Platform";
+const APP_NAME = "DreamCoin";
+const APP_DESCRIPTION = "DreamCoin – Crypto Trading & Rewards Platform";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -46,9 +45,7 @@ export default function RootLayout({
         <Providers>
           <FirebaseClientProvider>
             <AuthLayout>
-              <DashboardLayout>
-                {children}
-              </DashboardLayout>
+              {children}
             </AuthLayout>
           </FirebaseClientProvider>
         </Providers>

@@ -31,7 +31,7 @@ const transactionSummariesPrompt = ai.definePrompt({
   name: 'transactionSummariesPrompt',
   input: {schema: TransactionSummariesInputSchema},
   output: {schema: TransactionSummariesOutputSchema},
-  prompt: `You are an AI assistant that generates **concise** summaries of user transaction histories for a crypto trading and rewards platform called Dreamtoke.
+  prompt: `You are an AI assistant that generates **concise** summaries of user transaction histories for a crypto trading and rewards platform called DreamCoin.
 
   Given the following transaction history for user {{userId}}, create a **brief** summary of their activity:
 

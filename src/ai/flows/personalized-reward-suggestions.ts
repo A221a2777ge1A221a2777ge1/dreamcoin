@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
   name: 'personalizedRewardSuggestionsPrompt',
   input: {schema: PersonalizedRewardSuggestionsInputSchema},
   output: {schema: PersonalizedRewardSuggestionsOutputSchema},
-  prompt: `You are a personalized reward suggestion agent for the Dreamtoke crypto trading and rewards platform. Dreamtoke rewards users based on tiers related to engagement.
+  prompt: `You are a personalized reward suggestion agent for the DreamCoin crypto trading and rewards platform. DreamCoin rewards users based on tiers related to engagement.
 
   Given the user\'s current activity and progress, suggest the next reward tier they should pursue and provide a reason and motivational message.
 

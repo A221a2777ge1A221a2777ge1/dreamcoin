@@ -1,0 +1,297 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the DreamCoin platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user.",
+          "format": "uuid"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "The user's Web3 wallet address."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address (used for Google Authentication).",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name (from Google Authentication)."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile photo (from Google Authentication).",
+          "format": "uri"
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "description": "Timestamp of when the user account was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "walletAddress",
+        "email"
+      ]
+    },
+    "Transaction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Transaction",
+      "type": "object",
+      "description": "Represents a token swap transaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transaction."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Transaction)"
+        },
+        "fromToken": {
+          "type": "string",
+          "description": "The token being swapped from."
+        },
+        "toToken": {
+          "type": "string",
+          "description": "The token being swapped to (DreamCoin)."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of tokens swapped."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of the transaction.",
+          "format": "date-time"
+        },
+        "gasUsed": {
+          "type": "number",
+          "description": "The amount of gas used for the transaction."
+        },
+        "transactionHash": {
+          "type": "string",
+          "description": "The transaction hash."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "fromToken",
+        "toToken",
+        "amount",
+        "timestamp"
+      ]
+    },
+    "Reward": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reward",
+      "type": "object",
+      "description": "Represents a reward earned by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reward."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Reward)"
+        },
+        "rewardConfigId": {
+          "type": "string",
+          "description": "Reference to RewardConfig. (Relationship: RewardConfig 1:N Reward)"
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of reward (e.g., Lagos Bonus, Cairo Reward)."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of DreamCoin awarded."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the reward was earned.",
+          "format": "date-time"
+        },
+        "claimed": {
+          "type": "boolean",
+          "description": "Indicates whether the reward has been claimed."
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "Reference to Transaction, if applicable. (Relationship: Transaction 1:N Reward)"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "type",
+        "amount",
+        "timestamp",
+        "claimed"
+      ]
+    },
+    "RewardConfig": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "RewardConfig",
+      "type": "object",
+      "description": "Configuration for different reward types.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reward configuration."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of reward (e.g., Lagos Bonus, Cairo Reward)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the reward and its trigger conditions."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of DreamCoin awarded for this reward type."
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "description",
+        "amount"
+      ]
+    },
+    "FlaggedUser": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FlaggedUser",
+      "type": "object",
+      "description": "Represents a user flagged for potential abuse.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the flagged user (same as User ID)."
+        },
+        "reason": {
+          "type": "string",
+          "description": "The reason why the user was flagged."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the user was flagged.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "reason",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. The document ID is the Firebase Authentication `uid`.  Allows a user to read and write their own profile data. Enforces that `userId` matches `request.auth.uid`.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication `uid` of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/transactions/{transactionId}",
+        "definition": {
+          "entityName": "Transaction",
+          "schema": {
+            "$ref": "#/backend/entities/Transaction"
+          },
+          "description": "Stores transaction data for a user.  Allows listing only transactions belonging to the authenticated user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication `uid` of the user."
+            },
+            {
+              "name": "transactionId",
+              "description": "Unique identifier for the transaction."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/rewards/{rewardId}",
+        "definition": {
+          "entityName": "Reward",
+          "schema": {
+            "$ref": "#/backend/entities/Reward"
+          },
+          "description": "Stores reward data for a user.  Allows a user to read and write their own reward data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication `uid` of the user."
+            },
+            {
+              "name": "rewardId",
+              "description": "Unique identifier for the reward."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/rewardConfigs/{rewardConfigId}",
+        "definition": {
+          "entityName": "RewardConfig",
+          "schema": {
+            "$ref": "#/backend/entities/RewardConfig"
+          },
+          "description": "Stores configuration for different reward types.  This is a global collection with read-only rules for all authenticated users.",
+          "params": [
+            {
+              "name": "rewardConfigId",
+              "description": "Unique identifier for the reward configuration."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/flaggedUsers/{flaggedUserId}",
+        "definition": {
+          "entityName": "FlaggedUser",
+          "schema": {
+            "$ref": "#/backend/entities/FlaggedUser"
+          },
+          "description": "Stores information about users flagged for potential abuse.  Access to this collection is restricted to admin roles.",
+          "params": [
+            {
+              "name": "flaggedUserId",
+              "description": "The user ID of the flagged user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to facilitate a secure and scalable DreamCoin application. It prioritizes authorization independence by avoiding hierarchical dependencies and denormalizing authorization context where necessary. The structure supports QAPs by segregating data based on access needs and utilizing path-based ownership for user-specific data.\n\n*   **Users Collection:** Stores user profiles. Uses the Firebase Authentication `uid` as the document ID to directly tie into authentication. No additional authorization data is needed as the user can only access their own document.\n*   **Transactions Collection:** Stores transaction data. It uses the path `/users/{userId}/transactions/{transactionId}` to establish ownership (User 1:N Transaction) and allows listing only transactions belonging to the authenticated user.\n*   **Rewards Collection:** Stores reward data, structured under `/users/{userId}/rewards/{rewardId}` to reflect the User 1:N Reward relationship. This ensures only the user can access their own rewards. The `claimed` status is stored directly in the reward document.\n*   **RewardConfigs Collection:** Contains configuration for different reward types. This is a global collection accessible with read-only rules for all authenticated users.\n*   **FlaggedUsers Collection:** Contains a list of users flagged for potential abuse. Access to this collection is restricted to admin roles."
+  }
+}

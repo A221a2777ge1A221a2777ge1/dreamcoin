@@ -39,7 +39,7 @@ export const useWalletStore = create<WalletState>()(
         }),
       }),
       {
-        name: 'dreamtoke-wallet-storage',
+        name: 'dreamcoin-wallet-storage',
       }
     )
   )

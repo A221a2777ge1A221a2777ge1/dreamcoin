@@ -7,13 +7,12 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAuth, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gem } from 'lucide-react';
+import { Sun } from 'lucide-react';
 import { FirebaseError } from 'firebase/app';
 
 // This is the component for the Google Sign-In button
 function GoogleSignInButton() {
   const auth = useAuth();
-  const router = useRouter();
 
   const handleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -66,9 +65,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <Gem className="h-12 w-12 text-primary" />
+            <Sun className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="font-headline text-2xl">Welcome to Dreamtoke</CardTitle>
+          <CardTitle className="font-headline text-2xl">Welcome to DreamCoin</CardTitle>
           <CardDescription>Sign in to continue to your dashboard</CardDescription>
         </CardHeader>
         <CardContent>

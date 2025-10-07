@@ -4,6 +4,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import { useUser } from '@/firebase';
+import { DashboardLayout } from './dashboard-layout';
 
 /**
  * This component handles the authentication state of the user.
@@ -65,6 +66,12 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       </div>
     );
   }
+  
+  // If it's an auth page, just render the children without the dashboard layout
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
 
-  return <>{children}</>;
+  // For all other pages, wrap with the main DashboardLayout
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

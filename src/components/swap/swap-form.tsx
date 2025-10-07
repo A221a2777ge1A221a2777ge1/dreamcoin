@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { useWalletStore } from "@/lib/store/wallet";
-import { useUser } from "@/firebase";
+import { useUser } from '../../firebase/provider';
 
 const tokens = [
   { symbol: "BNB", name: "Binance Coin" },

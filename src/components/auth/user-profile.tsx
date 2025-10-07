@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser } from '../../firebase/provider';
 import { useRouter } from 'next/navigation';
 import { LogOut, User, Wallet } from 'lucide-react';
 import { useWalletStore } from '@/lib/store/wallet';

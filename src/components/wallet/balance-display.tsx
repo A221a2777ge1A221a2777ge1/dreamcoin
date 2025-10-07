@@ -2,7 +2,7 @@
 
 import { useWalletStore } from "@/lib/store/wallet";
 import { useEffect, useState } from "react";
-import { useUser } from '../../firebase/provider';
+import { useUser } from "../../firebase/auth/use-user";
 
 interface BalanceDisplayProps {
   token: "BNB" | "DRC";

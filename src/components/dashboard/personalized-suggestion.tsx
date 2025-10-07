@@ -10,7 +10,7 @@ import Link from "next/link";
 import { userTransactions } from "@/lib/data";
 import { useWalletStore } from "@/lib/store/wallet";
 import { useRouter } from "next/navigation";
-import { useUser } from '../../firebase/provider';
+import { useUser } from "../../firebase/auth/use-user";
 
 export function PersonalizedSuggestion() {
   const [suggestion, setSuggestion] = useState<PersonalizedRewardSuggestionsOutput | null>(null);

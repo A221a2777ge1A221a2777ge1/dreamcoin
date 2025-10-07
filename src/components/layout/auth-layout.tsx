@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import React from 'react';
 import { DashboardLayout } from './dashboard-layout';
-import { useUser } from '../../firebase/provider';
+import { useUser } from '../../firebase/auth/use-user';
 import { Skeleton } from '../ui/skeleton';
 
 /**

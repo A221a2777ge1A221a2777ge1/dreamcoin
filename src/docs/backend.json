@@ -181,7 +181,7 @@
     }
   },
   "auth": {
-    "providers": []
+    "providers": ["google.com"]
   },
   "firestore": {
     "structure": [
@@ -277,3 +277,5 @@
     "reasoning": "The Firestore structure is designed for a Web3-centric application. User documents are keyed by their wallet address, which serves as the primary identifier. This removes the need for traditional authentication methods like email or social logins and aligns with the decentralized nature of the app."
   }
 }
+
+    

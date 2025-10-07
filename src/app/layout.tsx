@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from '@/components/providers';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { AuthLayout } from '@/components/layout/auth-layout';
 
 const APP_NAME = "DreamCoin";
@@ -43,11 +42,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <Providers>
-          <FirebaseClientProvider>
             <AuthLayout>
               {children}
             </AuthLayout>
-          </FirebaseClientProvider>
         </Providers>
       </body>
     </html>

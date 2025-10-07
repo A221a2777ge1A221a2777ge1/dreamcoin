@@ -9,6 +9,7 @@ import { Coins, Trophy, Wallet, Zap } from "lucide-react";
 import { PersonalizedSuggestion } from "@/components/dashboard/personalized-suggestion";
 import { HistoryTable } from "@/components/history/history-table";
 import { userTransactions, userRewards } from "@/lib/data";
+import { BalanceDisplay } from "@/components/wallet/balance-display";
 
 export default function DashboardPage() {
   const recentTransactions = userTransactions.slice(0, 5);
@@ -29,8 +30,7 @@ export default function DashboardPage() {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">--</div>
-            <p className="text-xs text-muted-foreground">BNB</p>
+            <BalanceDisplay token="BNB" />
           </CardContent>
         </Card>
         <Card>
@@ -41,8 +41,7 @@ export default function DashboardPage() {
             <Coins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">--</div>
-            <p className="text-xs text-muted-foreground">DRC</p>
+            <BalanceDisplay token="DRC" />
           </CardContent>
         </Card>
         <Card>

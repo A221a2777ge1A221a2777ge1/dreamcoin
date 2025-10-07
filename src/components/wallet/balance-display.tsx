@@ -1,31 +1,25 @@
 "use client";
 
-import { useUser } from "@/firebase";
+import { useWalletStore } from "@/lib/store/wallet";
 import { useEffect, useState } from "react";
 
 interface BalanceDisplayProps {
   token: "BNB" | "DRC";
 }
 
-// Mock balances since wallet connection is removed
-const mockBalances = {
-    bnbBalance: "1.234",
-    dreamCoinBalance: "5,678.90"
-}
-
 export function BalanceDisplay({ token }: BalanceDisplayProps) {
-  const { user, isUserLoading } = useUser();
+  const { isConnected, bnbBalance, dreamCoinBalance } = useWalletStore();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  if (!isClient || !user) {
+  if (!isClient || !isConnected) {
     return <div className="text-2xl font-bold">--</div>;
   }
   
-  const balance = token === "BNB" ? mockBalances.bnbBalance : mockBalances.dreamCoinBalance;
+  const balance = token === "BNB" ? bnbBalance : dreamCoinBalance;
   const symbol = token === "BNB" ? "BNB" : "DRC";
 
   return (

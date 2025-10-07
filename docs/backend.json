@@ -4,30 +4,15 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a user of the Dreamtoke platform.",
+      "description": "Represents a user of the DreamCoin platform.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the user.",
-          "format": "uuid"
+          "description": "Unique identifier for the user, typically the wallet address."
         },
         "walletAddress": {
           "type": "string",
           "description": "The user's Web3 wallet address."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address (used for Google Authentication).",
-          "format": "email"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name (from Google Authentication)."
-        },
-        "photoURL": {
-          "type": "string",
-          "description": "URL of the user's profile photo (from Google Authentication).",
-          "format": "uri"
         },
         "creationTimestamp": {
           "type": "string",
@@ -37,8 +22,7 @@
       },
       "required": [
         "id",
-        "walletAddress",
-        "email"
+        "walletAddress"
       ]
     },
     "Transaction": {
@@ -197,9 +181,7 @@
     }
   },
   "auth": {
-    "providers": [
-      "google.com"
-    ]
+    "providers": []
   },
   "firestore": {
     "structure": [
@@ -210,11 +192,11 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profiles. The document ID is the Firebase Authentication `uid`.  Allows a user to read and write their own profile data. Enforces that `userId` matches `request.auth.uid`.",
+          "description": "Stores user profiles. The document ID is the user's wallet address.",
           "params": [
             {
               "name": "userId",
-              "description": "The Firebase Authentication `uid` of the user."
+              "description": "The wallet address of the user."
             }
           ]
         }
@@ -226,11 +208,11 @@
           "schema": {
             "$ref": "#/backend/entities/Transaction"
           },
-          "description": "Stores transaction data for a user.  Allows listing only transactions belonging to the authenticated user.",
+          "description": "Stores transaction data for a user.",
           "params": [
             {
               "name": "userId",
-              "description": "The Firebase Authentication `uid` of the user."
+              "description": "The wallet address of the user."
             },
             {
               "name": "transactionId",
@@ -246,11 +228,11 @@
           "schema": {
             "$ref": "#/backend/entities/Reward"
           },
-          "description": "Stores reward data for a user.  Allows a user to read and write their own reward data.",
+          "description": "Stores reward data for a user.",
           "params": [
             {
               "name": "userId",
-              "description": "The Firebase Authentication `uid` of the user."
+              "description": "The wallet address of the user."
             },
             {
               "name": "rewardId",
@@ -266,7 +248,7 @@
           "schema": {
             "$ref": "#/backend/entities/RewardConfig"
           },
-          "description": "Stores configuration for different reward types.  This is a global collection with read-only rules for all authenticated users.",
+          "description": "Stores configuration for different reward types.",
           "params": [
             {
               "name": "rewardConfigId",
@@ -282,7 +264,7 @@
           "schema": {
             "$ref": "#/backend/entities/FlaggedUser"
           },
-          "description": "Stores information about users flagged for potential abuse.  Access to this collection is restricted to admin roles.",
+          "description": "Stores information about users flagged for potential abuse.",
           "params": [
             {
               "name": "flaggedUserId",
@@ -292,6 +274,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to facilitate a secure and scalable Dreamtoke application. It prioritizes authorization independence by avoiding hierarchical dependencies and denormalizing authorization context where necessary. The structure supports QAPs by segregating data based on access needs and utilizing path-based ownership for user-specific data.\n\n*   **Users Collection:** Stores user profiles. Uses the Firebase Authentication `uid` as the document ID to directly tie into authentication. No additional authorization data is needed as the user can only access their own document.\n*   **Transactions Collection:** Stores transaction data. It uses the path `/users/{userId}/transactions/{transactionId}` to establish ownership (User 1:N Transaction) and allows listing only transactions belonging to the authenticated user.\n*   **Rewards Collection:** Stores reward data, structured under `/users/{userId}/rewards/{rewardId}` to reflect the User 1:N Reward relationship. This ensures only the user can access their own rewards. The `claimed` status is stored directly in the reward document.\n*   **RewardConfigs Collection:** Contains configuration for different reward types. This is a global collection accessible with read-only rules for all authenticated users.\n*   **FlaggedUsers Collection:** Contains a list of users flagged for potential abuse. Access to this collection is restricted to admin roles."
+    "reasoning": "The Firestore structure is designed for a Web3-centric application. User documents are keyed by their wallet address, which serves as the primary identifier. This removes the need for traditional authentication methods like email or social logins and aligns with the decentralized nature of the app."
   }
 }

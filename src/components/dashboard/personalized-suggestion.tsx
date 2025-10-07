@@ -8,25 +8,25 @@ import { personalizedRewardSuggestions, PersonalizedRewardSuggestionsOutput } fr
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { userTransactions } from "@/lib/data";
-import { useUser } from "@/firebase";
+import { useWalletStore } from "@/lib/store/wallet";
 import { useRouter } from "next/navigation";
 
 export function PersonalizedSuggestion() {
   const [suggestion, setSuggestion] = useState<PersonalizedRewardSuggestionsOutput | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user, isUserLoading } = useUser();
+  const { isConnected, address } = useWalletStore();
   const router = useRouter();
 
   useEffect(() => {
     const fetchSuggestion = async () => {
-      if (user) {
+      if (isConnected && address) {
         setLoading(true);
         try {
           const swapCount = userTransactions.filter(t => t.type === 'Swap').length;
           const lastSwap = userTransactions.find(t => t.type === 'Swap');
 
           const result = await personalizedRewardSuggestions({
-            walletAddress: user.uid, // Using UID as a stand-in for wallet address
+            walletAddress: address,
             currentTier: "Cairo Reward", // Mocked
             swapCount: swapCount,
             lastSwapDate: lastSwap?.date,
@@ -44,12 +44,10 @@ export function PersonalizedSuggestion() {
       }
     };
 
-    if (!isUserLoading) {
-      fetchSuggestion();
-    }
-  }, [user, isUserLoading]);
+    fetchSuggestion();
+  }, [isConnected, address]);
 
-  if (isUserLoading || loading) {
+  if (loading) {
     return (
       <Card>
         <CardHeader>
@@ -65,16 +63,16 @@ export function PersonalizedSuggestion() {
     );
   }
 
-  if (!user) {
+  if (!isConnected) {
      return (
       <Card className="h-full flex flex-col items-center justify-center text-center">
         <CardHeader>
           <div className="mx-auto bg-primary/10 p-3 rounded-full"><Lightbulb className="w-8 h-8 text-primary" /></div>
-          <CardTitle className="font-headline mt-4">Sign In to Continue</CardTitle>
+          <CardTitle className="font-headline mt-4">Connect Your Wallet</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Please sign in to see personalized tips and your next reward!</p>
-          <Button className="mt-4" onClick={() => router.push('/login')}>Sign In</Button>
+          <p className="text-muted-foreground">Please connect your wallet to see personalized tips and your next reward!</p>
+          <Button className="mt-4" onClick={() => router.push('/connect-wallet')}>Connect Wallet</Button>
         </CardContent>
       </Card>
     );

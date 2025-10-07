@@ -30,10 +30,10 @@ export default function HistoryPage() {
       <TransactionSummary />
 
       <div className="space-y-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <Input placeholder="Filter by hash..." className="max-w-xs" />
           <Select>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
@@ -43,7 +43,7 @@ export default function HistoryPage() {
             </SelectContent>
           </Select>
            <Select>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>

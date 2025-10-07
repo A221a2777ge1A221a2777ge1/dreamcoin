@@ -7,7 +7,7 @@ interface WalletState {
   chainId: number | null;
   bnbBalance: string;
   dreamCoinBalance: string;
-  connect: (walletDetails: Partial<WalletState>) => void;
+  connect: (walletDetails: Partial<Omit<WalletState, 'isConnected'>>) => void;
   disconnect: () => void;
   setBalance: (balances: { bnbBalance: string; dreamCoinBalance: string }) => void;
 }
@@ -24,7 +24,9 @@ export const useWalletStore = create<WalletState>()(
         connect: (walletDetails) => set({ 
           isConnected: true, 
           address: walletDetails.address,
-          chainId: walletDetails.chainId 
+          chainId: walletDetails.chainId,
+          bnbBalance: walletDetails.bnbBalance || '0.00',
+          dreamCoinBalance: walletDetails.dreamCoinBalance || '0.00',
         }),
         disconnect: () => set({ 
           isConnected: false, 

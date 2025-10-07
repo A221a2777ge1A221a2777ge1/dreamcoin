@@ -1,0 +1,152 @@
+/**
+ * @fileoverview Firestore Security Rules for the Dreamtoke platform.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for personal data (users, transactions, rewards),
+ * allows public read access to reward configurations, and restricts access to flagged user data.
+ * It prioritizes authorization independence, avoiding hierarchical dependencies and denormalizing
+ * authorization context where necessary.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles, where {userId} is the Firebase Auth UID.
+ * - /users/{userId}/transactions/{transactionId}: Stores transaction data for each user.
+ * - /users/{userId}/rewards/{rewardId}: Stores reward data for each user.
+ * - /rewardConfigs/{rewardConfigId}: Stores reward configurations (publicly readable).
+ * - /flaggedUsers/{flaggedUserId}: Stores data for flagged users (admin-only access).
+ *
+ * Key Security Decisions:
+ * - Users can only read and write their own profile data, transactions, and rewards.
+ * - Listing of all users is disallowed.
+ * - Reward configurations are publicly readable but not writable.
+ * - Flagged user data is restricted to admin roles (currently not implemented).
+ *
+ * Denormalization for Authorization:
+ * - User-specific data (transactions, rewards) is stored under the /users/{userId} path,
+ *   allowing for simple path-based authorization using the `isOwner(userId)` function.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Defines the isSigned helper function to check if a user is signed in.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Defines the isOwner helper function.
+     * @param {string} userId The user ID to check against the request's auth UID.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Defines the isExistingOwner helper function to check if a user is the owner and the resource exists.
+     * @param {string} userId The user ID to check against the resource's data.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Enforces that the ID is immutable on updates
+     * @param {string} field The field you want to check.
+     */
+    function isImmutable(field) {
+        return request.resource.data[field] == resource.data[field];
+    }
+
+    /**
+     * @description Rules for the /users/{userId} collection.
+     * @path /users/{userId}
+     * @allow (create) Authenticated user with matching UID in path and document.
+     * @deny (create) Unauthenticated user.
+     * @allow (get) Authenticated user requesting their own profile.
+     * @deny (get) Authenticated user requesting another user's profile.
+     * @allow (update) Authenticated user updating their own profile.
+     * @deny (update) Unauthenticated user or different user attempting to update the profile.
+     * @allow (delete) Authenticated user deleting their own profile.
+     * @deny (delete) Unauthenticated user or different user attempting to delete the profile.
+     * @principle Enforces document ownership for writes; restricts access to a user's own data tree.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Listing all users is not permitted.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && isImmutable('id');
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/transactions/{transactionId} collection.
+     * @path /users/{userId}/transactions/{transactionId}
+     * @allow (create) Authenticated user creating a transaction for themselves.
+     * @deny (create) Unauthenticated user or user creating a transaction for another user.
+     * @allow (get) Authenticated user reading their own transaction.
+     * @deny (get) Unauthenticated user or user reading another user's transaction.
+     * @allow (update) Authenticated user updating their own transaction.
+     * @deny (update) Unauthenticated user or user updating another user's transaction.
+     * @allow (delete) Authenticated user deleting their own transaction.
+     * @deny (delete) Unauthenticated user or user deleting another user's transaction.
+     * @principle Enforces document ownership for writes; restricts access to a user's own data tree.
+     */
+    match /users/{userId}/transactions/{transactionId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && isImmutable('userId');
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/rewards/{rewardId} collection.
+     * @path /users/{userId}/rewards/{rewardId}
+     * @allow (create) Authenticated user creating a reward for themselves.
+     * @deny (create) Unauthenticated user or user creating a reward for another user.
+     * @allow (get) Authenticated user reading their own reward.
+     * @deny (get) Unauthenticated user or user reading another user's reward.
+     * @allow (update) Authenticated user updating their own reward.
+     * @deny (update) Unauthenticated user or user updating another user's reward.
+     * @allow (delete) Authenticated user deleting their own reward.
+     * @deny (delete) Unauthenticated user or user deleting another user's reward.
+     * @principle Enforces document ownership for writes; restricts access to a user's own data tree.
+     */
+    match /users/{userId}/rewards/{rewardId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && isImmutable('userId');
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /rewardConfigs/{rewardConfigId} collection.
+     * @path /rewardConfigs/{rewardConfigId}
+     * @allow (get) All authenticated users can read reward configurations.
+     * @deny (create) No one can create reward configurations through the client.
+     * @deny (update) No one can update reward configurations through the client.
+     * @deny (delete) No one can delete reward configurations through the client.
+     * @principle Allows public read access; restricts writes.
+     */
+    match /rewardConfigs/{rewardConfigId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Rules for the /flaggedUsers/{flaggedUserId} collection.
+     * @path /flaggedUsers/{flaggedUserId}
+     * @deny (get) No one can read flagged users through the client.
+     * @deny (create) No one can create flagged users through the client.
+     * @deny (update) No one can update flagged users through the client.
+     * @deny (delete) No one can delete flagged users through the client.
+     * @principle Restricts access to admin roles.
+     */
+    match /flaggedUsers/{flaggedUserId} {
+      allow get, list, create, update, delete: if false; // TODO: Implement admin role check
+    }
+  }
+}

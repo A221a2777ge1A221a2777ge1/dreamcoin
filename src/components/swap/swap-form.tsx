@@ -32,6 +32,7 @@ const tokens = [
 
 export function SwapForm() {
   const [slippage, setSlippage] = useState("0.5");
+  const [customSlippage, setCustomSlippage] = useState("");
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
   const isConnected = false;
@@ -46,6 +47,16 @@ export function SwapForm() {
       setToAmount("");
     }
   };
+
+  const handleCustomSlippageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCustomSlippage(value);
+    if (value && !isNaN(parseFloat(value))) {
+        setSlippage(value);
+    } else if (!value) {
+        setSlippage("0.5"); // default back if empty
+    }
+  }
 
 
   return (
@@ -118,14 +129,27 @@ export function SwapForm() {
               {slippage}% <Settings className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuLabel>Slippage Tolerance</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup value={slippage} onValueChange={setSlippage}>
+            <DropdownMenuRadioGroup value={slippage} onValueChange={(value) => { setSlippage(value); setCustomSlippage(""); }}>
                 <DropdownMenuRadioItem value="0.5">0.5%</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="1">1.0%</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="2">2.0%</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+            <div className="p-2">
+                <Label htmlFor="custom-slippage" className="text-xs font-medium">Custom</Label>
+                <Input
+                    id="custom-slippage"
+                    type="number"
+                    placeholder="Enter value"
+                    className="h-9 mt-1"
+                    value={customSlippage}
+                    onChange={handleCustomSlippageChange}
+                    onFocus={() => setSlippage(customSlippage || "0")}
+                />
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "lagos-reward",
+      "description": "Lagos Bonus Reward Tier Image",
+      "imageUrl": "https://picsum.photos/seed/lagos/200/200",
+      "imageHint": "lagos city"
+    },
+    {
+      "id": "cairo-reward",
+      "description": "Cairo Reward Tier Image",
+      "imageUrl": "https://picsum.photos/seed/cairo/200/200",
+      "imageHint": "cairo pyramids"
+    },
+    {
+      "id": "nairobi-reward",
+      "description": "Nairobi Treasure Tier Image",
+      "imageUrl": "https://picsum.photos/seed/nairobi/200/200",
+      "imageHint": "nairobi skyline"
+    },
+    {
+      "id": "accra-reward",
+      "description": "Accra Champion Tier Image",
+      "imageUrl": "https://picsum.photos/seed/accra/200/200",
+      "imageHint": "accra beach"
+    }
+  ]
 }

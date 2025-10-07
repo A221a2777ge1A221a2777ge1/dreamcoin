@@ -1,0 +1,46 @@
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+interface WalletState {
+  address: string | null;
+  isConnected: boolean;
+  chainId: number | null;
+  bnbBalance: string;
+  dreamCoinBalance: string;
+  connect: (walletDetails: Partial<WalletState>) => void;
+  disconnect: () => void;
+  setBalance: (balances: { bnbBalance: string; dreamCoinBalance: string }) => void;
+}
+
+export const useWalletStore = create<WalletState>()(
+  devtools(
+    persist(
+      (set) => ({
+        address: null,
+        isConnected: false,
+        chainId: null,
+        bnbBalance: '0.00',
+        dreamCoinBalance: '0.00',
+        connect: (walletDetails) => set({ 
+          isConnected: true, 
+          address: walletDetails.address,
+          chainId: walletDetails.chainId 
+        }),
+        disconnect: () => set({ 
+          isConnected: false, 
+          address: null, 
+          chainId: null,
+          bnbBalance: '0.00',
+          dreamCoinBalance: '0.00' 
+        }),
+        setBalance: (balances) => set({
+            bnbBalance: balances.bnbBalance,
+            dreamCoinBalance: balances.dreamCoinBalance
+        }),
+      }),
+      {
+        name: 'dreamtoke-wallet-storage',
+      }
+    )
+  )
+);

@@ -15,7 +15,15 @@ export type Transaction = {
 export type RewardTier = {
   id: string;
   name: string;
-  tier: 'Lagos Bonus' | 'Cairo Reward' | 'Nairobi Treasure' | 'Accra Champion';
+  tier:
+    | 'Lagos Bonus'
+    | 'Cairo Reward'
+    | 'Nairobi Treasure'
+    | 'Accra Champion'
+    | 'Kinshasa Diamond'
+    | 'Addis Ababa Ally'
+    | 'Gaborone Gem'
+    | 'Harare Hustler';
   trigger: string;
   reward: number;
   status: 'claimed' | 'unclaimed' | 'locked';

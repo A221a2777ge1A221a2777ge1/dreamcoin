@@ -23,6 +23,30 @@
       "description": "Accra Champion Tier Image",
       "imageUrl": "https://picsum.photos/seed/accra/200/200",
       "imageHint": "accra beach"
+    },
+    {
+      "id": "kinshasa-reward",
+      "description": "Kinshasa Diamond Tier Image",
+      "imageUrl": "https://picsum.photos/seed/kinshasa/200/200",
+      "imageHint": "kinshasa congo river"
+    },
+    {
+      "id": "addis-reward",
+      "description": "Addis Ababa Ally Tier Image",
+      "imageUrl": "https://picsum.photos/seed/addis/200/200",
+      "imageHint": "addis ababa"
+    },
+    {
+      "id": "gaborone-reward",
+      "description": "Gaborone Gem Tier Image",
+      "imageUrl": "https://picsum.photos/seed/gaborone/200/200",
+      "imageHint": "gaborone city"
+    },
+    {
+      "id": "harare-reward",
+      "description": "Harare Hustler Tier Image",
+      "imageUrl": "https://picsum.photos/seed/harare/200/200",
+      "imageHint": "harare zimbabwe"
     }
   ]
 }

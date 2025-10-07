@@ -1,11 +1,11 @@
-
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import React from 'react';
 import { DashboardLayout } from './dashboard-layout';
-import { useWalletStore } from '@/lib/store/wallet';
+import { useUser } from '@/firebase'; // Using Firebase Auth user
+import { Skeleton } from '../ui/skeleton';
 
 /**
  * This component handles the authentication state of the user.
@@ -13,30 +13,25 @@ import { useWalletStore } from '@/lib/store/wallet';
  * and authenticated users are redirected away from the login page.
  */
 export function AuthLayout({ children }: { children: ReactNode }) {
-  const { isConnected } = useWalletStore();
+  const { data: user, isLoading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const [isClient, setIsClient] = React.useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (isLoading) return;
 
-  useEffect(() => {
-    if (!isClient) return;
+    const isAuthPage = pathname === '/login';
 
-    const isAuthPage = pathname === '/connect-wallet';
-
-    if (!isConnected && !isAuthPage) {
-      router.push('/connect-wallet');
+    if (!user && !isAuthPage) {
+      router.push('/login');
     }
 
-    if (isConnected && isAuthPage) {
+    if (user && isAuthPage) {
       router.push('/');
     }
-  }, [isConnected, isClient, router, pathname]);
+  }, [user, isLoading, router, pathname]);
 
-  if (!isClient) {
+  if (isLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <p>Loading...</p>
@@ -44,17 +39,17 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
   
-  const isAuthPage = pathname === '/connect-wallet';
+  const isAuthPage = pathname === '/login';
 
-  if (!isConnected && !isAuthPage) {
+  if (!user && !isAuthPage) {
     return (
        <div className="flex h-screen w-full items-center justify-center">
-        <p>Redirecting to connect wallet...</p>
+        <p>Redirecting to login...</p>
       </div>
     );
   }
   
-  if (isConnected && isAuthPage) {
+  if (user && isAuthPage) {
       return (
        <div className="flex h-screen w-full items-center justify-center">
         <p>Redirecting to dashboard...</p>

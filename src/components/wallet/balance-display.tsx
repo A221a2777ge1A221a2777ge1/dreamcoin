@@ -2,20 +2,22 @@
 
 import { useWalletStore } from "@/lib/store/wallet";
 import { useEffect, useState } from "react";
+import { useUser } from "@/firebase";
 
 interface BalanceDisplayProps {
   token: "BNB" | "DRC";
 }
 
 export function BalanceDisplay({ token }: BalanceDisplayProps) {
-  const { isConnected, bnbBalance, dreamCoinBalance } = useWalletStore();
+  const { data: user } = useUser();
+  const { isConnected: isWalletConnected, bnbBalance, dreamCoinBalance } = useWalletStore();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  if (!isClient || !isConnected) {
+  if (!isClient || !user || !isWalletConnected) {
     return <div className="text-2xl font-bold">--</div>;
   }
   

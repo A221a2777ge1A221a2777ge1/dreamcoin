@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { useWalletStore } from "@/lib/store/wallet";
+import { useUser } from "@/firebase";
 
 const tokens = [
   { symbol: "BNB", name: "Binance Coin" },
@@ -36,7 +37,8 @@ export function SwapForm() {
   const [customSlippage, setCustomSlippage] = useState("");
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
-  const { isConnected } = useWalletStore();
+  const { isConnected: isWalletConnected } = useWalletStore();
+  const { data: user } = useUser();
   const router = useRouter();
 
   const handleAmountChange = (value: string) => {
@@ -59,6 +61,17 @@ export function SwapForm() {
         setSlippage("0.5"); // default back if empty
     }
   }
+  
+  const getButtonContent = () => {
+    if (!user) {
+        return <Button size="lg" className="w-full text-lg h-12" onClick={() => router.push('/login')}>Sign In to Swap</Button>;
+    }
+    if (!isWalletConnected) {
+        return <Button size="lg" className="w-full text-lg h-12">Connect Wallet to Swap</Button>;
+    }
+    return <Button size="lg" className="w-full text-lg h-12">Swap</Button>;
+  }
+
 
   return (
     <div className="space-y-4">
@@ -166,11 +179,7 @@ export function SwapForm() {
         </div>
       </div>
 
-      {isConnected ? (
-        <Button size="lg" className="w-full text-lg h-12">Swap</Button>
-      ) : (
-        <Button size="lg" className="w-full text-lg h-12" onClick={() => router.push('/connect-wallet')}>Connect Wallet to Swap</Button>
-      )}
+      {getButtonContent()}
     </div>
   );
 }

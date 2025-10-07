@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -10,70 +9,126 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useWalletStore } from '@/lib/store/wallet';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useAuth, useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { LogOut, Wallet } from 'lucide-react';
-import { Skeleton } from '../ui/skeleton';
-import { useEffect, useState } from 'react';
+import { LogOut, User, Wallet } from 'lucide-react';
+import { useWalletStore } from '@/lib/store/wallet';
+import { useToast } from '@/hooks/use-toast';
+
+declare global {
+    interface Window {
+        ethereum?: any;
+    }
+}
 
 export function UserProfile() {
-  const { isConnected, address, disconnect } = useWalletStore();
+  const auth = useAuth();
+  const { data: user } = useUser();
   const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
+  const { connect, disconnect, isConnected, address } = useWalletStore();
+  const { toast } = useToast();
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const handleSignOut = async () => {
+    if (auth) {
+      await auth.signOut();
+      if (isConnected) {
+        disconnect();
+      }
+      router.push('/login');
+    }
+  };
+  
+  const handleConnectWallet = async () => {
+    if (typeof window.ethereum === 'undefined') {
+        toast({
+            variant: "destructive",
+            title: "MetaMask Not Found",
+            description: "Please install the MetaMask extension to connect your wallet.",
+        });
+        return;
+    }
 
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const walletAddress = accounts[0];
+        const chainId = parseInt(window.ethereum.chainId, 16);
 
-  const handleSignOut = () => {
-    disconnect();
-    router.push('/connect-wallet');
+        // Mock balances for now
+        const bnbBalance = (Math.random() * 5).toFixed(4);
+        const dreamCoinBalance = (Math.random() * 10000).toFixed(2);
+      
+        connect({ address: walletAddress, chainId, bnbBalance, dreamCoinBalance });
+        
+        toast({
+            title: "Wallet Connected",
+            description: `Connected to address: ${walletAddress.substring(0,6)}...${walletAddress.substring(walletAddress.length - 4)}`,
+        });
+
+    } catch (error: any) {
+        console.error('MetaMask sign-in error:', error);
+        toast({
+            variant: "destructive",
+            title: "Connection Failed",
+            description: error.message || 'Could not connect to MetaMask. Please try again.',
+        });
+    }
   };
 
   const formatAddress = (addr: string | null) => {
-    if (!addr) return '...';
+    if (!addr) return '';
     return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   }
 
-  if (!isClient) {
-    return <Skeleton className="h-8 w-24 rounded-md" />;
-  }
-
-  if (!isConnected) {
-    return (
-      <Button onClick={() => router.push('/connect-wallet')}>
-        Connect Wallet
-      </Button>
-    );
-  }
+  if (!user) return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" className="relative h-10 gap-2">
-          <Avatar className="h-6 w-6">
+        <Button variant="secondary" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-8 w-8">
+            {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
             <AvatarFallback>
-                <Wallet className="h-4 w-4"/>
+                <User className="h-4 w-4"/>
             </AvatarFallback>
           </Avatar>
-          <span className="hidden sm:inline">{formatAddress(address)}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-64" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Connected Wallet</p>
+            <p className="text-sm font-medium leading-none">{user?.displayName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {address}
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isConnected ? (
+          <>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">Connected Wallet</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {formatAddress(address)}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+             <DropdownMenuItem onClick={disconnect}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Disconnect Wallet</span>
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem onClick={handleConnectWallet}>
+            <Wallet className="mr-2 h-4 w-4" />
+            <span>Connect Wallet</span>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Disconnect</span>
+          <span>Sign Out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

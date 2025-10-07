@@ -3,23 +3,25 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Wallet } from "lucide-react";
 import { personalizedRewardSuggestions, PersonalizedRewardSuggestionsOutput } from "@/ai/flows/personalized-reward-suggestions";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { userTransactions } from "@/lib/data";
 import { useWalletStore } from "@/lib/store/wallet";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/firebase";
 
 export function PersonalizedSuggestion() {
   const [suggestion, setSuggestion] = useState<PersonalizedRewardSuggestionsOutput | null>(null);
   const [loading, setLoading] = useState(true);
-  const { isConnected, address } = useWalletStore();
+  const { isConnected: isWalletConnected, address } = useWalletStore();
+  const { data: user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
     const fetchSuggestion = async () => {
-      if (isConnected && address) {
+      if (user && address) {
         setLoading(true);
         try {
           const swapCount = userTransactions.filter(t => t.type === 'Swap').length;
@@ -45,7 +47,7 @@ export function PersonalizedSuggestion() {
     };
 
     fetchSuggestion();
-  }, [isConnected, address]);
+  }, [user, address]);
 
   if (loading) {
     return (
@@ -63,19 +65,34 @@ export function PersonalizedSuggestion() {
     );
   }
 
-  if (!isConnected) {
+  if (!user) {
      return (
       <Card className="h-full flex flex-col items-center justify-center text-center">
         <CardHeader>
           <div className="mx-auto bg-primary/10 p-3 rounded-full"><Lightbulb className="w-8 h-8 text-primary" /></div>
-          <CardTitle className="font-headline mt-4">Connect Your Wallet</CardTitle>
+          <CardTitle className="font-headline mt-4">Welcome to DreamCoin</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Please connect your wallet to see personalized tips and your next reward!</p>
-          <Button className="mt-4" onClick={() => router.push('/connect-wallet')}>Connect Wallet</Button>
+          <p className="text-muted-foreground">Please sign in to see personalized tips and your next reward!</p>
+          <Button className="mt-4" onClick={() => router.push('/login')}>Sign In</Button>
         </CardContent>
       </Card>
     );
+  }
+
+  if (!isWalletConnected) {
+    return (
+     <Card className="h-full flex flex-col items-center justify-center text-center">
+       <CardHeader>
+         <div className="mx-auto bg-primary/10 p-3 rounded-full"><Wallet className="w-8 h-8 text-primary" /></div>
+         <CardTitle className="font-headline mt-4">Connect Your Wallet</CardTitle>
+       </CardHeader>
+       <CardContent>
+         <p className="text-muted-foreground">Connect your wallet to get personalized reward suggestions based on your activity.</p>
+         {/* The button to connect is in the UserProfile component */}
+       </CardContent>
+     </Card>
+   );
   }
 
   if (!suggestion) {

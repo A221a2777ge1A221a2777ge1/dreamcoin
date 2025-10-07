@@ -9,7 +9,6 @@ export default function Header() {
       <div className="flex-1" />
       <div className="flex items-center gap-2">
         <Button>Connect Wallet</Button>
-        <ThemeToggle />
       </div>
     </header>
   );

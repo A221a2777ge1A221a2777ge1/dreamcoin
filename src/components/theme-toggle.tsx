@@ -8,6 +8,7 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
+    // On mount, set theme based on class
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
   }, []);
@@ -20,12 +21,16 @@ export function ThemeToggle() {
     setTheme(isDark ? "dark" : "light");
   };
   
-  // Set initial theme from localStorage
+  // Set initial theme from localStorage if available
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-        document.documentElement.classList.toggle("dark", savedTheme === "dark");
-        setTheme(savedTheme);
+    // We default to dark now, so only switch to light if specified
+    if (savedTheme === "light") {
+        document.documentElement.classList.remove("dark");
+        setTheme("light");
+    } else {
+        document.documentElement.classList.add("dark");
+        setTheme("dark");
     }
   }, []);
 

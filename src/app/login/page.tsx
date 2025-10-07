@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -7,7 +6,7 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAuth, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sun } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import { FirebaseError } from 'firebase/app';
 
 // This is the component for the Google Sign-In button
@@ -62,10 +61,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex-1 flex items-center justify-center bg-background p-4 african-pattern">
-      <Card className="w-full max-w-sm bg-background/80 backdrop-blur-sm border-primary/50">
+      <Card className="w-full max-w-sm bg-card/80 backdrop-blur-sm border-primary/50">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <Sun className="h-12 w-12 text-primary" />
+            <Palette className="h-12 w-12 text-primary" />
           </div>
           <CardTitle className="font-headline text-2xl">Welcome to DreamCoin</CardTitle>
           <CardDescription>Sign in to continue to your dashboard</CardDescription>

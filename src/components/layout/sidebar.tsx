@@ -6,6 +6,7 @@ import {
   Repeat,
   ShieldCheck,
   Sun,
+  Palette,
 } from "lucide-react";
 import { NavLink } from "./nav-link";
 
@@ -14,7 +15,7 @@ export default function Sidebar() {
     <aside className="hidden w-64 flex-col border-r bg-background sm:flex">
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline">
-          <Sun className="h-6 w-6 text-primary" />
+          <Palette className="h-6 w-6 text-primary" />
           <span>DreamCoin</span>
         </Link>
       </div>

@@ -66,3 +66,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+.african-pattern {
+  background-image:
+    radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.25) 1px, transparent 0),
+    radial-gradient(circle at 10px 10px, hsl(var(--primary) / 0.25) 1px, transparent 0);
+  background-size: 20px 20px;
+}

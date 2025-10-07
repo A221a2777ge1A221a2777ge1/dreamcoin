@@ -61,8 +61,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex-1 flex items-center justify-center bg-background p-4 african-pattern">
+      <Card className="w-full max-w-sm bg-background/80 backdrop-blur-sm border-primary/50">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             <Sun className="h-12 w-12 text-primary" />

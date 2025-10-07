@@ -11,13 +11,51 @@ import { userTransactions } from "@/lib/data";
 import { useWalletStore } from "@/lib/store/wallet";
 import { useRouter } from "next/navigation";
 import { useUser } from "../../firebase/auth/use-user";
+import { useToast } from "@/hooks/use-toast";
 
 export function PersonalizedSuggestion() {
   const [suggestion, setSuggestion] = useState<PersonalizedRewardSuggestionsOutput | null>(null);
   const [loading, setLoading] = useState(true);
-  const { isConnected: isWalletConnected, address } = useWalletStore();
+  const { isConnected: isWalletConnected, address, connect } = useWalletStore();
   const { data: user } = useUser();
   const router = useRouter();
+  const { toast } = useToast();
+
+  const handleConnectWallet = async () => {
+    if (typeof window.ethereum === 'undefined') {
+        toast({
+            variant: "destructive",
+            title: "MetaMask Not Found",
+            description: "Please install the MetaMask extension to connect your wallet.",
+        });
+        return;
+    }
+
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const walletAddress = accounts[0];
+        const chainId = parseInt(window.ethereum.chainId, 16);
+
+        // Mock balances for now
+        const bnbBalance = (Math.random() * 5).toFixed(4);
+        const dreamCoinBalance = (Math.random() * 10000).toFixed(2);
+      
+        connect({ address: walletAddress, chainId, bnbBalance, dreamCoinBalance });
+        
+        toast({
+            title: "Wallet Connected",
+            description: `Connected to address: ${walletAddress.substring(0,6)}...${walletAddress.substring(walletAddress.length - 4)}`,
+        });
+
+    } catch (error: any) {
+        console.error('MetaMask sign-in error:', error);
+        toast({
+            variant: "destructive",
+            title: "Connection Failed",
+            description: error.message || 'Could not connect to MetaMask. Please try again.',
+        });
+    }
+  };
 
   useEffect(() => {
     const fetchSuggestion = async () => {
@@ -67,14 +105,14 @@ export function PersonalizedSuggestion() {
 
   if (!user) {
      return (
-      <Card className="h-full flex flex-col items-center justify-center text-center">
+      <Card className="h-full flex flex-col items-center justify-center text-center p-4 sm:p-6">
         <CardHeader>
           <div className="mx-auto bg-primary/10 p-3 rounded-full"><Lightbulb className="w-8 h-8 text-primary" /></div>
           <CardTitle className="font-headline mt-4">Welcome to DreamCoin</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Please sign in to see personalized tips and your next reward!</p>
-          <Button className="mt-4" onClick={() => router.push('/login')}>Sign In</Button>
+          <p className="text-muted-foreground mb-4">Please sign in to see personalized tips and your next reward!</p>
+          <Button onClick={() => router.push('/login')}>Sign In</Button>
         </CardContent>
       </Card>
     );
@@ -82,14 +120,17 @@ export function PersonalizedSuggestion() {
 
   if (!isWalletConnected) {
     return (
-     <Card className="h-full flex flex-col items-center justify-center text-center">
+     <Card className="h-full flex flex-col items-center justify-center text-center p-4 sm:p-6">
        <CardHeader>
          <div className="mx-auto bg-primary/10 p-3 rounded-full"><Wallet className="w-8 h-8 text-primary" /></div>
          <CardTitle className="font-headline mt-4">Connect Your Wallet</CardTitle>
        </CardHeader>
-       <CardContent>
-         <p className="text-muted-foreground">Connect your wallet to get personalized reward suggestions based on your activity.</p>
-         {/* The button to connect is in the UserProfile component */}
+       <CardContent className="w-full max-w-xs">
+         <p className="text-muted-foreground mb-4">Connect your wallet to get personalized reward suggestions based on your activity.</p>
+         <Button onClick={handleConnectWallet} className="w-full gap-2">
+            <Wallet className="h-5 w-5" />
+            Connect with MetaMask
+         </Button>
        </CardContent>
      </Card>
    );

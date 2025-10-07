@@ -4,8 +4,6 @@ import {
   LayoutDashboard,
   History,
   Repeat,
-  ShieldCheck,
-  Sun,
   Palette,
 } from "lucide-react";
 import { NavLink } from "./nav-link";
@@ -35,10 +33,6 @@ export default function Sidebar() {
         <NavLink href="/history">
           <History className="h-4 w-4" />
           History
-        </NavLink>
-        <NavLink href="/admin">
-          <ShieldCheck className="h-4 w-4" />
-          Admin
         </NavLink>
       </nav>
     </aside>

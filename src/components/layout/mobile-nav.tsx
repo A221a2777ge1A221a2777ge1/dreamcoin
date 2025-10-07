@@ -4,7 +4,6 @@ import {
   History,
   LayoutDashboard,
   Repeat,
-  ShieldCheck
 } from "lucide-react";
 import { NavLink } from "./nav-link";
 
@@ -26,10 +25,6 @@ export function MobileNav() {
         <NavLink href="/history">
             <History className="h-6 w-6" />
             <span className="sr-only">History</span>
-        </NavLink>
-        <NavLink href="/admin">
-            <ShieldCheck className="h-6 w-6" />
-            <span className="sr-only">Admin</span>
         </NavLink>
     </nav>
   );

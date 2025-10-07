@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from '@/components/providers';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { AuthLayout } from '@/components/layout/auth-layout';
 
 const APP_NAME = "Dreamtoke";
 const APP_DESCRIPTION = "Dreamtoke – Crypto Trading & Rewards Platform";
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#293144",
+  themeColor: "#111827",
 };
 
 export default function RootLayout({
@@ -42,9 +44,13 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <Providers>
-          <DashboardLayout>
-            {children}
-          </DashboardLayout>
+          <FirebaseClientProvider>
+            <AuthLayout>
+              <DashboardLayout>
+                {children}
+              </DashboardLayout>
+            </AuthLayout>
+          </FirebaseClientProvider>
         </Providers>
       </body>
     </html>

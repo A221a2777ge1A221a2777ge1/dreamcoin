@@ -8,23 +8,25 @@ import { personalizedRewardSuggestions, PersonalizedRewardSuggestionsOutput } fr
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { userTransactions } from "@/lib/data";
+import { useUser } from "@/firebase";
+import { useRouter } from "next/navigation";
 
 export function PersonalizedSuggestion() {
   const [suggestion, setSuggestion] = useState<PersonalizedRewardSuggestionsOutput | null>(null);
   const [loading, setLoading] = useState(true);
-  const isConnected = false;
-  const address = null;
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSuggestion = async () => {
-      if (isConnected && address) {
+      if (user) {
         setLoading(true);
         try {
           const swapCount = userTransactions.filter(t => t.type === 'Swap').length;
           const lastSwap = userTransactions.find(t => t.type === 'Swap');
 
           const result = await personalizedRewardSuggestions({
-            walletAddress: address,
+            walletAddress: user.uid, // Using UID as a stand-in for wallet address
             currentTier: "Cairo Reward", // Mocked
             swapCount: swapCount,
             lastSwapDate: lastSwap?.date,
@@ -42,25 +44,12 @@ export function PersonalizedSuggestion() {
       }
     };
 
-    fetchSuggestion();
-  }, [isConnected, address]);
+    if (!isUserLoading) {
+      fetchSuggestion();
+    }
+  }, [user, isUserLoading]);
 
-  if (!isConnected) {
-    return (
-      <Card className="h-full flex flex-col items-center justify-center text-center">
-        <CardHeader>
-          <div className="mx-auto bg-primary/10 p-3 rounded-full"><Lightbulb className="w-8 h-8 text-primary" /></div>
-          <CardTitle className="font-headline mt-4">Connect Your Wallet</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Connect your wallet to see personalized tips and your next reward!</p>
-          <Button className="mt-4">Connect Wallet</Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (loading) {
+  if (isUserLoading || loading) {
     return (
       <Card>
         <CardHeader>
@@ -71,6 +60,21 @@ export function PersonalizedSuggestion() {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
           <Skeleton className="h-10 w-32 mt-2" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!user) {
+     return (
+      <Card className="h-full flex flex-col items-center justify-center text-center">
+        <CardHeader>
+          <div className="mx-auto bg-primary/10 p-3 rounded-full"><Lightbulb className="w-8 h-8 text-primary" /></div>
+          <CardTitle className="font-headline mt-4">Sign In to Continue</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">Please sign in to see personalized tips and your next reward!</p>
+          <Button className="mt-4" onClick={() => router.push('/login')}>Sign In</Button>
         </CardContent>
       </Card>
     );
